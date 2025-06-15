@@ -8,6 +8,8 @@ package com.mycompany.text_analyse;
  *
  * @author Владислав
  */
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,39 +19,38 @@ import javax.swing.table.DefaultTableModel;
 
 public class MainGUI extends JFrame {
     private static final String APP_TITLE = "Анализатор текста";
-    
+
     // Модель данных для таблицы
     private DefaultTableModel tableModel;
     private JTable frequencyTable;
 
-    // Логика работы с файлами
+    // Логика работы с файлами и анализом
     private FileOutputInput fileIO;
     private TextProcessor textProcessor;
-    private FrequencyAnalyzer frequencyAnalyzer;
     private StopWordsLoader stopWordsLoader;
     private ExcelExporter excelExporter;
+    private AdvancedSettingsDialog settingsDialog;
 
     // Данные
     private List<String> originalText;       // исходный текст
     private List<String> processedText;      // обработанный текст
     private List<String> stopWords;          // стоп-слова
-    private AdvancedSettingsDialog settingsDialog;
 
     public MainGUI() {
         setTitle(APP_TITLE);
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(null); // центрируем окно
+        setVisible(true);
 
+        // Инициализация логики
         fileIO = new FileOutputInput(this);
         textProcessor = new TextProcessor();
-        frequencyAnalyzer = new FrequencyAnalyzer();
         stopWordsLoader = new StopWordsLoader(fileIO);
         excelExporter = new ExcelExporter(this);
-        //settingsDialog = new AdvancedSettingsDialog(this);
+        settingsDialog = new AdvancedSettingsDialog(this);
 
         initializeUI();
-        setVisible(true);
     }
 
     private void initializeUI() {
@@ -64,7 +65,7 @@ public class MainGUI extends JFrame {
         JMenuItem exitItem = new JMenuItem("Выход");
 
         loadItem.addActionListener(e -> onLoadFile());
-        //analyzeItem.addActionListener(e -> onAnalyze());
+        analyzeItem.addActionListener(e -> onAnalyze());
         saveReportItem.addActionListener(e -> onSaveReport());
         exitItem.addActionListener(e -> System.exit(0));
 
@@ -80,7 +81,7 @@ public class MainGUI extends JFrame {
         JMenuItem advancedSettingsItem = new JMenuItem("Расширенные настройки");
 
         loadStopWordsItem.addActionListener(e -> onLoadStopWords());
-        //advancedSettingsItem.addActionListener(e -> onOpenAdvancedSettings());
+        advancedSettingsItem.addActionListener(e -> onOpenAdvancedSettings());
 
         settingsMenu.add(loadStopWordsItem);
         settingsMenu.add(advancedSettingsItem);
@@ -102,6 +103,14 @@ public class MainGUI extends JFrame {
         // --- Финальная сборка ---
         add(scrollPane, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.SOUTH);
+
+        // --- Добавляем кнопку анализа ---
+        JButton analyzeButton = new JButton("Провести анализ");
+        analyzeButton.addActionListener(e -> onAnalyze());
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(statusLabel, BorderLayout.WEST);
+        bottomPanel.add(analyzeButton, BorderLayout.EAST);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void onLoadFile() {
@@ -111,39 +120,40 @@ public class MainGUI extends JFrame {
         }
     }
 
-//    private void onAnalyze() {
-//        if (originalText == null || originalText.isEmpty()) {
-//            fileIO.showError("Ошибка", new Exception("Сначала загрузите файл."));
-//            return;
-//        }
-//
-//        // Применяем настройки фильтрации
-//        processedText = textProcessor.process(originalText, stopWords, settingsDialog.getSettings());
-//
-//        // Подсчёт частотности
-//        Map<String, Double> frequencies = frequencyAnalyzer.calculateFrequencies(processedText);
-//
-//        // Очистка таблицы
-//        tableModel.setRowCount(0);
-//
-//        // Заполнение таблицы
-//        for (Map.Entry<String, Double> entry : frequencies.entrySet()) {
-//            tableModel.addRow(new Object[]{entry.getKey(), entry.getValue()});
-//        }
-//
-//        int deletedWords = originalText.size() - processedText.size();
-//        fileIO.showMessage("Анализ завершён.\n" +
-//                "Всего слов: " + originalText.size() + "\n" +
-//                "Удалено слов: " + deletedWords + "\n" +
-//                "Самое частое слово: " + getMostFrequentWord());
-//    }
-//
-//    private String getMostFrequentWord() {
-//        if (tableModel.getRowCount() > 0) {
-//            return (String) tableModel.getValueAt(0, 0);
-//        }
-//        return "Нет данных";
-//    }
+    private void onAnalyze() {
+        if (originalText == null || originalText.isEmpty()) {
+            fileIO.showError("Ошибка", new Exception("Сначала загрузите файл."));
+            return;
+        }
+
+        // Применяем настройки фильтрации
+        boolean shouldRemoveStopWords = settingsDialog.shouldRemoveStopWords();
+        processedText = textProcessor.removeStopWords(originalText, stopWords, shouldRemoveStopWords);
+
+        // Подсчёт частоты
+        Map<String, Double> frequencies = textProcessor.calculateFrequencies(processedText);
+
+        // Очистка таблицы
+        tableModel.setRowCount(0);
+
+        // Заполнение таблицы
+        for (Map.Entry<String, Double> entry : frequencies.entrySet()) {
+            tableModel.addRow(new Object[]{entry.getKey(), entry.getValue()});
+        }
+
+        int deletedWords = originalText.size() - processedText.size();
+        fileIO.showMessage("Анализ завершён.\n" +
+                "Всего слов: " + originalText.size() + "\n" +
+                "Удалено слов: " + deletedWords + "\n" +
+                "Самое частое слово: " + getMostFrequentWord());
+    }
+
+    private String getMostFrequentWord() {
+        if (tableModel.getRowCount() > 0) {
+            return (String) tableModel.getValueAt(0, 0);
+        }
+        return "Нет данных";
+    }
 
     private void onSaveReport() {
         if (processedText == null || processedText.isEmpty()) {
@@ -151,14 +161,12 @@ public class MainGUI extends JFrame {
             return;
         }
 
-        // Формируем отчёт как строку
         StringBuilder report = new StringBuilder();
         report.append("Отчёт о частоте слов:\n\n");
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             report.append(tableModel.getValueAt(i, 0)).append(" — ").append(tableModel.getValueAt(i, 1)).append("\n");
         }
 
-        // Сохраняем как Excel
         excelExporter.exportToExcel(tableModel, "output/report.xlsx");
     }
 
@@ -169,9 +177,7 @@ public class MainGUI extends JFrame {
         }
     }
 
-//    private void onOpenAdvancedSettings() {
-//        settingsDialog.setVisible(true);
-//    }
-
-   
+    private void onOpenAdvancedSettings() {
+        settingsDialog.setVisible(true);
+    }
 }
