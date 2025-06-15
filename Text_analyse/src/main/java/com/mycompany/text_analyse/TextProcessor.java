@@ -13,14 +13,8 @@ import java.util.stream.Collectors;
 
 public class TextProcessor {
 
-    /**
-     * Убирает стоп-слова из списка (если включено)
-     * @param words список обработанных слов
-     * @param stopWords список стоп-слов
-     * @param removeStopWords флаг: убирать ли стоп-слова
-     * @return отфильтрованный список слов
-     */
-    public List<String> removeStopWords(List<String> words, List<String> stopWords, boolean removeStopWords) {
+    
+    public List<String> removeStopWords(List<String> words, List<String> stopWords, boolean removeStopWords) {//удаление стоп слов
         if (words == null || words.isEmpty()) {
             return Collections.emptyList();
         }
@@ -35,12 +29,8 @@ public class TextProcessor {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Подсчитывает частоту встречаемости слов
-     * @param words список слов после фильтрации
-     * @return Map<Слово, Частота (%)>, отсортированный по убыванию
-     */
-    public Map<String, Double> calculateFrequencies(List<String> words) {
+    
+    public Map<String, Double> calculateFrequencies(List<String> words) {//считает частоту, words-слова после фильтрации
         if (words == null || words.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -59,10 +49,8 @@ public class TextProcessor {
                 ));
     }
 
-    /**
-     * Округление до двух знаков после запятой
-     */
-    private double roundToTwoDecimals(double value) {
-        return Math.round(value * 100.0) / 100.0;
+    
+    private double roundToTwoDecimals(double value) {//округление
+        return Math.round(value * 10000.0) / 10000.0;
     }
 }

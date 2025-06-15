@@ -20,30 +20,29 @@ import javax.swing.table.DefaultTableModel;
 public class MainGUI extends JFrame {
     private static final String APP_TITLE = "Анализатор текста";
 
-    // Модель данных для таблицы
+    
     private DefaultTableModel tableModel;
     private JTable frequencyTable;
 
-    // Логика работы с файлами и анализом
     private FileOutputInput fileIO;
     private TextProcessor textProcessor;
     private StopWordsLoader stopWordsLoader;
     private ExcelExporter excelExporter;
     private AdvancedSettingsDialog settingsDialog;
 
-    // Данные
-    private List<String> originalText;       // исходный текст
-    private List<String> processedText;      // обработанный текст
-    private List<String> stopWords;          // стоп-слова
+    
+    private List<String> originalText;       //исходный текст
+    private List<String> processedText;      //обработанный текст
+    private List<String> stopWords;          //стоп-слова
 
     public MainGUI() {
         setTitle(APP_TITLE);
         setSize(900, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // центрируем окно
+        setLocationRelativeTo(null); 
         setVisible(true);
 
-        // Инициализация логики
+       
         fileIO = new FileOutputInput(this);
         textProcessor = new TextProcessor();
         stopWordsLoader = new StopWordsLoader(fileIO);
@@ -54,10 +53,9 @@ public class MainGUI extends JFrame {
     }
 
     private void initializeUI() {
-        // --- Меню ---
+        
         JMenuBar menuBar = new JMenuBar();
 
-        // Меню "Файл"
         JMenu fileMenu = new JMenu("Файл");
         JMenuItem loadItem = new JMenuItem("Загрузить файл");
         JMenuItem analyzeItem = new JMenuItem("Провести анализ");
@@ -75,7 +73,7 @@ public class MainGUI extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
-        // Меню "Настройки"
+        //меню настройки
         JMenu settingsMenu = new JMenu("Настройки");
         JMenuItem loadStopWordsItem = new JMenuItem("Загрузить стоп-слова");
         JMenuItem advancedSettingsItem = new JMenuItem("Расширенные настройки");
@@ -90,21 +88,21 @@ public class MainGUI extends JFrame {
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
 
-        // --- Таблица ---
+        // таблица
         String[] columnNames = {"Слово", "Частота (%)"};
         tableModel = new DefaultTableModel(columnNames, 0);
         frequencyTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(frequencyTable);
 
-        // --- Статусная строка ---
+        
         JLabel statusLabel = new JLabel("Готов к работе...");
         statusLabel.setBorder(BorderFactory.createEtchedBorder());
 
-        // --- Финальная сборка ---
+       
         add(scrollPane, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.SOUTH);
 
-        // --- Добавляем кнопку анализа ---
+        
         JButton analyzeButton = new JButton("Провести анализ");
         analyzeButton.addActionListener(e -> onAnalyze());
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -126,17 +124,15 @@ public class MainGUI extends JFrame {
             return;
         }
 
-        // Применяем настройки фильтрации
+        //настройки фильтрации
         boolean shouldRemoveStopWords = settingsDialog.shouldRemoveStopWords();
         processedText = textProcessor.removeStopWords(originalText, stopWords, shouldRemoveStopWords);
 
-        // Подсчёт частоты
+        //подсчёт частоты
         Map<String, Double> frequencies = textProcessor.calculateFrequencies(processedText);
-
-        // Очистка таблицы
         tableModel.setRowCount(0);
 
-        // Заполнение таблицы
+        //заполнение таблицы
         for (Map.Entry<String, Double> entry : frequencies.entrySet()) {
             tableModel.addRow(new Object[]{entry.getKey(), entry.getValue()});
         }

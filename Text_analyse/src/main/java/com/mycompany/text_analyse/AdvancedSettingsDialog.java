@@ -13,50 +13,45 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class AdvancedSettingsDialog extends JDialog {
-    private boolean removeStopWords = true; // значение по умолчанию
+    private boolean removeStopWords = true; 
     private JCheckBox removeStopWordsCheckbox;
 
     public AdvancedSettingsDialog(JFrame parent) {
-        super(parent, "Расширенные настройки", true); // модальное окно
+        super(parent, "Расширенные настройки", true); 
         setSize(350, 150);
         setLocationRelativeTo(parent);
 
-        // Панель с настройками
+       
         JPanel panel = new JPanel(new GridLayout(2, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Чекбокс: убирать стоп-слова
+       
         removeStopWordsCheckbox = new JCheckBox("Убирать стоп-слова из текста");
         removeStopWordsCheckbox.setSelected(removeStopWords);
         panel.add(removeStopWordsCheckbox);
 
-        // Кнопка "Сохранить"
+        
         JButton saveButton = new JButton("Сохранить");
         saveButton.addActionListener(e -> {
             removeStopWords = removeStopWordsCheckbox.isSelected();
-            dispose(); // закрыть окно
+            dispose(); 
         });
 
-        // Панель с кнопкой
+       
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(saveButton);
 
-        // Добавляем всё на форму
+       
         add(panel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Показывает диалог и возвращает настройки
-     */
     public boolean showSettingsDialog() {
         setVisible(true); // блокирующий вызов (модальное окно)
         return removeStopWords;
     }
 
-    /**
-     * Возвращает текущее значение настройки
-     */
+   
     public boolean shouldRemoveStopWords() {
         return removeStopWords;
     }

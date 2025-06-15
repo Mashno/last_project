@@ -24,9 +24,7 @@ public class ExcelExporter {
         this.parentFrame = parent;
     }
 
-    /**
-     * Экспортирует данные таблицы в Excel (.xlsx)
-     */
+    
     public void exportToExcel(DefaultTableModel tableModel, String defaultFileName) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel файлы (.xlsx)", "xlsx"));
@@ -41,21 +39,19 @@ public class ExcelExporter {
         }
     }
 
-    /**
-     * Записывает данные из таблицы в Excel файл
-     */
+    
     private void writeExcel(DefaultTableModel tableModel, Path filePath) {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Частота слов");
 
-            // Записываем заголовки
+          
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(tableModel.getColumnName(i));
             }
 
-            // Записываем данные
+           
             for (int rowIdx = 0; rowIdx < tableModel.getRowCount(); rowIdx++) {
                 Row row = sheet.createRow(rowIdx + 1);
                 for (int colIdx = 0; colIdx < tableModel.getColumnCount(); colIdx++) {
@@ -69,12 +65,11 @@ public class ExcelExporter {
                 }
             }
 
-            // Автоподгон ширины столбцов
+            //подгон ширины столбцов
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            // Сохраняем файл
             try (OutputStream out = new FileOutputStream(filePath.toFile())) {
                 workbook.write(out);
             }
