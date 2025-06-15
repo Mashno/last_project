@@ -31,9 +31,9 @@ public class MainGUI extends JFrame {
     private AdvancedSettingsDialog settingsDialog;
 
     
-    private List<String> originalText;       //исходный текст
-    private List<String> processedText;      //обработанный текст
-    private List<String> stopWords;          //стоп-слова
+    private List<String> originalText;//исходный текст
+    private List<String> processedText;//обработанный текст
+    private List<String> stopWords;//стоп-слова
 
     public MainGUI() {
         setTitle(APP_TITLE);
@@ -126,8 +126,11 @@ public class MainGUI extends JFrame {
 
         //настройки фильтрации
         boolean shouldRemoveStopWords = settingsDialog.shouldRemoveStopWords();
-        processedText = textProcessor.removeStopWords(originalText, stopWords, shouldRemoveStopWords);
-
+        String selectedLang = settingsDialog.getSelectedLanguage();
+        List<String> filteredByText = textProcessor.filterByLanguage(originalText, selectedLang);
+        
+        processedText = textProcessor.removeStopWords(filteredByText, stopWords, shouldRemoveStopWords);
+        
         //подсчёт частоты
         Map<String, Double> frequencies = textProcessor.calculateFrequencies(processedText);
         tableModel.setRowCount(0);
@@ -167,7 +170,8 @@ public class MainGUI extends JFrame {
     }
 
     private void onLoadStopWords() {
-        stopWords = stopWordsLoader.loadStopWords();
+        String lang = settingsDialog.getSelectedLanguage();
+        stopWords = stopWordsLoader.loadStopWords(lang);
         if (stopWords != null && !stopWords.isEmpty()) {
             fileIO.showMessage("Загружено " + stopWords.size() + " стоп-слов.");
         }

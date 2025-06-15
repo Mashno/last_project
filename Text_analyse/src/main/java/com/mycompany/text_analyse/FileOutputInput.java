@@ -40,12 +40,12 @@ public class FileOutputInput {
         try {
             Charset encoding = Charset.forName("Cp1251");
 
-            String content = Files.readString(filePath, encoding);//читает файла как одну строку
-            String[] words = content.split("\\s+");//разделяем текст на слова поделив по одному или нескольким пробелам
+            String content = Files.readString(filePath, encoding);//читает файл как одну строку
+            String[] words = content.split("\\s+");//разделяет текст на слова поделив по одному или нескольким пробелам
             List<String> wordList = new ArrayList<>();
 
             for (String word : words) {
-                String cleaned = word.trim().replaceAll("[^а-яА-Я]", "");//trim - убирает пробелы в начале и конце. replaceAll - удаляет все символы кроме русских
+                String cleaned = word.trim();//trim - убирает пробелы в начале и конце. replaceAll - удаляет все символы кроме русских
                 if (!cleaned.isEmpty()) {
                     wordList.add(cleaned.toLowerCase());
                 }

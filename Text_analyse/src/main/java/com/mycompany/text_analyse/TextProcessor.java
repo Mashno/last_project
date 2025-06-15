@@ -28,7 +28,26 @@ public class TextProcessor {
                 .filter(word -> !stopSet.contains(word.toLowerCase()))
                 .collect(Collectors.toList());
     }
+    
+    public List<String> filterByLanguage(List<String> words, String language) {
+        if (words == null || words.isEmpty()) {
+            return Collections.emptyList();
+        }
 
+        if ("RU".equals(language)) {
+            return words.stream()
+                    .map(word -> word.replaceAll("[^а-яА-Я]", "").trim())
+                    .filter(word -> !word.isEmpty())
+                    .collect(Collectors.toList());
+        } else if ("EN".equals(language)) {
+            return words.stream()
+                    .map(word -> word.replaceAll("[^a-zA-Z]", "").trim())
+                    .filter(word -> !word.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        return words; 
+    }
     
     public Map<String, Double> calculateFrequencies(List<String> words) {//считает частоту, words-слова после фильтрации
         if (words == null || words.isEmpty()) {

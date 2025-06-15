@@ -14,6 +14,9 @@ import java.awt.event.*;
 
 public class AdvancedSettingsDialog extends JDialog {
     private boolean removeStopWords = true; 
+    private String selectedLanguage = "RU";
+     
+    private JComboBox<String> languageComboBox;
     private JCheckBox removeStopWordsCheckbox;
 
     public AdvancedSettingsDialog(JFrame parent) {
@@ -22,7 +25,7 @@ public class AdvancedSettingsDialog extends JDialog {
         setLocationRelativeTo(parent);
 
        
-        JPanel panel = new JPanel(new GridLayout(2, 1, 10, 10));
+        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
        
@@ -30,10 +33,15 @@ public class AdvancedSettingsDialog extends JDialog {
         removeStopWordsCheckbox.setSelected(removeStopWords);
         panel.add(removeStopWordsCheckbox);
 
+        languageComboBox = new JComboBox<>(new String[]{"RU", "EN"});
+        languageComboBox.setSelectedItem(selectedLanguage);
+        panel.add(new JLabel("Выберите язык текста:"));
+        panel.add(languageComboBox);
         
         JButton saveButton = new JButton("Сохранить");
         saveButton.addActionListener(e -> {
             removeStopWords = removeStopWordsCheckbox.isSelected();
+            selectedLanguage = (String) languageComboBox.getSelectedItem();
             dispose(); 
         });
 
@@ -54,5 +62,9 @@ public class AdvancedSettingsDialog extends JDialog {
    
     public boolean shouldRemoveStopWords() {
         return removeStopWords;
+    }
+    
+    public String getSelectedLanguage() {
+        return selectedLanguage;
     }
 }

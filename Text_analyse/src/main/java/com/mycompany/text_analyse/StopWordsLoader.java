@@ -22,18 +22,18 @@ public class StopWordsLoader {
         this.fileIO = fileHandler;
     }
 
-    public List<String> loadStopWords() {
+    public List<String> loadStopWords(String selectedLanguage) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Текстовые файлы (.txt)", "txt"));
 
         if (fileChooser.showOpenDialog(fileIO.getParentFrame()) == JFileChooser.APPROVE_OPTION) {
             Path filePath = fileChooser.getSelectedFile().toPath();
-            return readStopWordsFromFile(filePath);
+            return readStopWordsFromFile(filePath, selectedLanguage);
         }
         return new ArrayList<>();
     }
 
-    private List<String> readStopWordsFromFile(Path filePath) {
+    private List<String> readStopWordsFromFile(Path filePath, String selectedLanguage) {
         try {
             Charset encoding = Charset.forName("Cp1251");
             List<String> lines = Files.readAllLines(filePath, encoding);//читает подряд все символы
@@ -45,8 +45,9 @@ public class StopWordsLoader {
 
             String firstLine = lines.get(0).trim();//первая строка должна быть RU
 
-            if (!firstLine.equalsIgnoreCase("RU")) {
-                fileIO.showError("Первая строка файла должна содержать 'RU'", new Exception());
+            if (!firstLine.equalsIgnoreCase(selectedLanguage)) {
+                fileIO.showError("Ошибка формата файла", new Exception(
+                        "Первая строка должна быть: " + selectedLanguage));
                 return new ArrayList<>();
             }
 
