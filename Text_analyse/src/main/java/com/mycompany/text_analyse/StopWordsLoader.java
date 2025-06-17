@@ -22,7 +22,7 @@ public class StopWordsLoader {
         this.fileIO = fileHandler;
     }
 
-    public List<String> loadStopWords() {
+    public List<String> loadStopWords() {//загрузка стоп слов
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Текстовые файлы (.txt)", "txt"));
 
@@ -33,10 +33,10 @@ public class StopWordsLoader {
         return new ArrayList<>();
     }
 
-    private List<String> readStopWordsFromFile(Path filePath) {
+    private List<String> readStopWordsFromFile(Path filePath) {//прочитать слова из файла
         try {
             Charset encoding = Charset.forName("Cp1251");
-            List<String> lines = Files.readAllLines(filePath, encoding);//читает подряд все символы
+            List<String> lines = Files.readAllLines(filePath, encoding);//читает все строки файла в список
 
             if (lines.isEmpty()) {
                 fileIO.showError("Файл стоп-слов пуст.", new Exception());

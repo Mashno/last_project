@@ -20,7 +20,7 @@ public class FileOutputInput {
     private final JFrame parentFrame;
 
     public FileOutputInput(JFrame parent) {
-        this.parentFrame = parent;
+        this.parentFrame = parent;//используется для передачи данных и модальности окон
     }
 
     public List<String> loadTextFile() {//загрузка файла
@@ -32,13 +32,13 @@ public class FileOutputInput {
             Path filePath = fileChooser.getSelectedFile().toPath();
             return readWordsFromFile(filePath);
         }
-        return new ArrayList<>();
+        return new ArrayList<>();//пустой список в случае ошибки
     }
 
     
     private List<String> readWordsFromFile(Path filePath) {//обработка слов
         try {
-            Charset encoding = Charset.forName("Cp1251");
+            Charset encoding = Charset.forName("Cp1251");//файл будет прочитан в кодировке Cp1251
 
             String content = Files.readString(filePath, encoding);//читает файла как одну строку
             String[] words = content.split("\\s+");//разделяем текст на слова поделив по одному или нескольким пробелам
@@ -47,7 +47,7 @@ public class FileOutputInput {
             for (String word : words) {
                 String cleaned = word.trim().replaceAll("[^а-яА-Я]", "");//trim - убирает пробелы в начале и конце. replaceAll - удаляет все символы кроме русских
                 if (!cleaned.isEmpty()) {
-                    wordList.add(cleaned.toLowerCase());
+                    wordList.add(cleaned.toLowerCase());//приводит к нижнему регистру
                 }
             }
 
@@ -60,11 +60,11 @@ public class FileOutputInput {
         }
     }
 
-    public void showMessage(String message) {
+    public void showMessage(String message) {//показывает панель с информацией о состоянии
         JOptionPane.showMessageDialog(parentFrame, message, "Информация", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void showError(String message, Exception ex) {
+    public void showError(String message, Exception ex) {//выводит панель с ошибкой
         JOptionPane.showMessageDialog(
                 parentFrame,
                 message + "\n" + ex.getMessage(),

@@ -30,7 +30,7 @@ public class ExcelExporter {
         fileChooser.setFileFilter(new FileNameExtensionFilter("Excel файлы (.xlsx)", "xlsx"));
         fileChooser.setSelectedFile(new File(defaultFileName));
 
-        if (fileChooser.showSaveDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {//проверка выбора файла
             Path filePath = fileChooser.getSelectedFile().toPath();
             if (!filePath.toString().endsWith(".xlsx")) {
                 filePath = Paths.get(filePath.toString() + ".xlsx");
@@ -40,18 +40,18 @@ public class ExcelExporter {
     }
 
     
-    private void writeExcel(DefaultTableModel tableModel, Path filePath) {
+    private void writeExcel(DefaultTableModel tableModel, Path filePath) {//метод для записи файла excel
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Частота слов");
 
-          
+          //создание заголовков
             Row headerRow = sheet.createRow(0);
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(tableModel.getColumnName(i));
             }
 
-           
+           //заполнение отчёта данными из таблицы
             for (int rowIdx = 0; rowIdx < tableModel.getRowCount(); rowIdx++) {
                 Row row = sheet.createRow(rowIdx + 1);
                 for (int colIdx = 0; colIdx < tableModel.getColumnCount(); colIdx++) {

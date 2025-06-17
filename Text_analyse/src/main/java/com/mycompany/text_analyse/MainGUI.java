@@ -31,9 +31,9 @@ public class MainGUI extends JFrame {
     private AdvancedSettingsDialog settingsDialog;
 
     
-    private List<String> originalText;       //исходный текст
-    private List<String> processedText;      //обработанный текст
-    private List<String> stopWords;          //стоп-слова
+    private List<String> originalText;//исходный текст
+    private List<String> processedText;//обработанный текст
+    private List<String> stopWords;//стоп-слова
 
     public MainGUI() {
         setTitle(APP_TITLE);
@@ -55,14 +55,14 @@ public class MainGUI extends JFrame {
     private void initializeUI() {
         
         JMenuBar menuBar = new JMenuBar();
-
+         //меню файл
         JMenu fileMenu = new JMenu("Файл");
         JMenuItem loadItem = new JMenuItem("Загрузить файл");
         JMenuItem analyzeItem = new JMenuItem("Провести анализ");
         JMenuItem saveReportItem = new JMenuItem("Сохранить отчёт");
         JMenuItem exitItem = new JMenuItem("Выход");
 
-        loadItem.addActionListener(e -> onLoadFile());
+        loadItem.addActionListener(e -> onLoadFile());//лямбда выражения вызова методов обработки кнопок
         analyzeItem.addActionListener(e -> onAnalyze());
         saveReportItem.addActionListener(e -> onSaveReport());
         exitItem.addActionListener(e -> System.exit(0));
@@ -88,7 +88,7 @@ public class MainGUI extends JFrame {
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
 
-        // таблица
+        //таблица
         String[] columnNames = {"Слово", "Частота (%)"};
         tableModel = new DefaultTableModel(columnNames, 0);
         frequencyTable = new JTable(tableModel);
@@ -102,7 +102,7 @@ public class MainGUI extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.SOUTH);
 
-        
+        //кнопка провести анализ
         JButton analyzeButton = new JButton("Провести анализ");
         analyzeButton.addActionListener(e -> onAnalyze());
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -111,14 +111,14 @@ public class MainGUI extends JFrame {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private void onLoadFile() {
+    private void onLoadFile() {//загрузка файла
         originalText = fileIO.loadTextFile();
         if (originalText != null && !originalText.isEmpty()) {
             fileIO.showMessage("Загружено " + originalText.size() + " слов.");
         }
     }
 
-    private void onAnalyze() {
+    private void onAnalyze() {//анализ текста
         if (originalText == null || originalText.isEmpty()) {
             fileIO.showError("Ошибка", new Exception("Сначала загрузите файл."));
             return;
@@ -126,10 +126,10 @@ public class MainGUI extends JFrame {
 
         //настройки фильтрации
         boolean shouldRemoveStopWords = settingsDialog.shouldRemoveStopWords();
-        processedText = textProcessor.removeStopWords(originalText, stopWords, shouldRemoveStopWords);
+        processedText = textProcessor.removeStopWords(originalText, stopWords, shouldRemoveStopWords);//обработка текста
 
         //подсчёт частоты
-        Map<String, Double> frequencies = textProcessor.calculateFrequencies(processedText);
+        Map<String, Double> frequencies = textProcessor.calculateFrequencies(processedText);//подсчёт частоты
         tableModel.setRowCount(0);
 
         //заполнение таблицы
@@ -137,27 +137,27 @@ public class MainGUI extends JFrame {
             tableModel.addRow(new Object[]{entry.getKey(), entry.getValue()});
         }
 
-        int deletedWords = originalText.size() - processedText.size();
+        int deletedWords = originalText.size() - processedText.size();//количество удалённых слов
         fileIO.showMessage("Анализ завершён.\n" +
                 "Всего слов: " + originalText.size() + "\n" +
                 "Удалено слов: " + deletedWords + "\n" +
                 "Самое частое слово: " + getMostFrequentWord());
     }
 
-    private String getMostFrequentWord() {
+    private String getMostFrequentWord() {//выбор самого популярного слова в первой строке
         if (tableModel.getRowCount() > 0) {
             return (String) tableModel.getValueAt(0, 0);
         }
         return "Нет данных";
     }
 
-    private void onSaveReport() {
+    private void onSaveReport() {//сохранения анализа текста в excel
         if (processedText == null || processedText.isEmpty()) {
             fileIO.showError("Ошибка", new Exception("Нет данных для сохранения."));
             return;
         }
 
-        StringBuilder report = new StringBuilder();
+        StringBuilder report = new StringBuilder();//класс джавы для ускорения работы со строками
         report.append("Отчёт о частоте слов:\n\n");
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             report.append(tableModel.getValueAt(i, 0)).append(" — ").append(tableModel.getValueAt(i, 1)).append("\n");
@@ -166,14 +166,14 @@ public class MainGUI extends JFrame {
         excelExporter.exportToExcel(tableModel, "output/report.xlsx");
     }
 
-    private void onLoadStopWords() {
+    private void onLoadStopWords() {//загрузка стоп слов
         stopWords = stopWordsLoader.loadStopWords();
         if (stopWords != null && !stopWords.isEmpty()) {
             fileIO.showMessage("Загружено " + stopWords.size() + " стоп-слов.");
         }
     }
 
-    private void onOpenAdvancedSettings() {
+    private void onOpenAdvancedSettings() {//открыть расширенные настройки
         settingsDialog.setVisible(true);
     }
 }

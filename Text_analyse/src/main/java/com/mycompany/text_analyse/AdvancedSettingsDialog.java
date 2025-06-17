@@ -13,10 +13,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class AdvancedSettingsDialog extends JDialog {
-    private boolean removeStopWords = true; 
+    private boolean removeStopWords = true; //flag
     private JCheckBox removeStopWordsCheckbox;
 
-    public AdvancedSettingsDialog(JFrame parent) {
+    public AdvancedSettingsDialog(JFrame parent) {// управление расширенными настройками
         super(parent, "Расширенные настройки", true); 
         setSize(350, 150);
         setLocationRelativeTo(parent);
@@ -38,7 +38,7 @@ public class AdvancedSettingsDialog extends JDialog {
         });
 
        
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));//контейнер для размещения кнопки сохранения
         buttonPanel.add(saveButton);
 
        
@@ -47,12 +47,12 @@ public class AdvancedSettingsDialog extends JDialog {
     }
 
     public boolean showSettingsDialog() {
-        setVisible(true); // блокирующий вызов (модальное окно)
+        setVisible(true); //не позволяет взаимодействовать с главным окном
         return removeStopWords;
     }
 
    
     public boolean shouldRemoveStopWords() {
-        return removeStopWords;
+        return removeStopWords;//проверка на флаг
     }
 }
